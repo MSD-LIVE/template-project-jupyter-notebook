@@ -26,8 +26,8 @@ to pull from s3 if you want to test locally**
    docker compose up
    ```
 
-Notebook repos need to set these secrets (use *_uploader user to generate new access keys):  
-
-AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY
-AWS_S3_BUCKET
+## Notebooks
+At the end of the Dockerfile do
+```bash
+COPY notebooks /home/jovyan/notebooks
+```
