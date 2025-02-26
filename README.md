@@ -43,13 +43,13 @@ to pull from s3 (instructions below) if you want to test locally**
    ```
 
 ## Project notebook Docker Images 
-1. Your repo's dev branch builds the image and tags it with 'dev' the main branch tags the image with 'latest'
+1. Your repo's dev branch builds the image and tags it with 'dev', the main branch tags the image with 'latest'
 1. After the initial build go to MSD-LIVE's [packages in github](https://github.com/orgs/MSD-LIVE/packages) click on your package, click on settings to the right, scroll to the bottom of the settings page and make sure the 'package visibility' is set to public (the notebook will fail to launch from MSD-LIVE's services if not set)
 
 
 ## Notebook customizations
 
-Here are some way to add specific behaviors for notebook containers. Note these are advanced use cases and not necessary for most deployments.
+Here are some ways to add specific behaviors for notebook containers. Note these are advanced use cases and not necessary for most deployments.
 
 1. Project notebook deployments can include a plugin to implement custom behaviors such as copying the input folder to the user's home folder because it cannot be read-only. [Here](https://github.com/MSD-LIVE/jupyter-notebook-statemodify) is an exmple of this behavior but is essentially these steps:
    1. Dockerfile needs to copy in and install the extension:
@@ -80,6 +80,7 @@ Here are some way to add specific behaviors for notebook containers. Note these 
 2. Start the notebook via docker compose
    ```bash
    # make sure you are in the jupyter-notebook-<<blank>> folder
+   cd ..
    docker compose up
    ```
 
@@ -87,7 +88,7 @@ Here are some way to add specific behaviors for notebook containers. Note these 
 
 
 ## Adding this Project Notebook to MSD-LIVE's Notebook Services:
-1. An MSD-LIVE developer will have to follow [the steps here](https://github.com/MSD-LIVE/jupyter-stacks/blob/main/MASTER_README.md) to add this as a new project notebook deployment either to dev or prod environments. 
+1. An MSD-LIVE developer will have to follow [the steps here](https://github.com/MSD-LIVE/jupyter-stacks/blob/main/MASTER_README.md) to add this as a new project notebook deployment (optionally to dev) in the prod config file. 
 1. Once added, there will be an s3 bucket that this notebook's input data will need to be uploaded to. The folder uploaded to the bucket must be named 'data'. 
 1. Data in the s3 bucket gets populated in one of these ways:
    1. Send the data or a link to an MSD-LIVE developer who can use the aws s3 console to upload to the bucket
@@ -100,6 +101,6 @@ Here are some way to add specific behaviors for notebook containers. Note these 
 
 ## Testing the notebook on dev 
 1. Dev project notebooks deployments are only availble internally to the PNNL domain. If not on site at PNNL you must be on the PNNL / Legacy PNNL VPN
-1. Note: you must use credentials of a user registered to the DEV msdlive site (msdlive.dev.org)
-1. Deployment are the same steps as above but for dev
+1. When logging in to the notebook you must use credentials of a user registered to the DEV msdlive site (msdlive.dev.org)
+1. Deployment for dev are the same steps as above but changes are made to the dev config file and files uploaded to the dev bucket
 
