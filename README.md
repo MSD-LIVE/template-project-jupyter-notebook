@@ -22,25 +22,28 @@ to pull from s3 (instructions below) if you want to test locally**
 
 ## Developing the project notebook container:
 1. Your Dockerfile needs to:
-   1. Extend one of our base images:
+   1. Extend from our base images:
       ```
-      FROM ghcr.io/msd-live/jupyter/python-notebook:latest 
-      FROM ghcr.io/msd-live/jupyter/r-notebook:latest 
-      FROM ghcr.io/msd-live/jupyter/julia-notebook:latest 
-      FROM ghcr.io/msd-live/jupyter/base-panel-jupyter-notebook:latest
-
+      FROM ghcr.io/msd-live/jupyter/datascience-notebook:latest 
       ```
-   1. Copy in the notebooks and any other files needed in order to run. When the container starts everything in the /home/jovyan folder will be copied to the current user's home folder
+   1. Install any pre-requisites needed for your project. For example,
+      ```
+      USER root
+      RUN git clone --depth=1 --branch=main https://github.com/IMMM-SFA/msd_uncertainty_ebook.git msd_uncertainty_ebook
+      RUN cd msd_uncertainty_ebook && pip install .
+      ```
+   1. Finally, copy in the notebooks and any other files needed in order to run. When the container starts everything in the /home/jovyan folder will be copied to the current user's home folder
       ```
       COPY notebooks /home/jovyan/notebooks
       ```
 1. Containers extending one of these base images will have a `DATA_DIR` environment variable set and the value will be the path to the read-only staged input data, or `/data`. There will also be a symbolic link created in the user's home folder named 'data' that points to `/data` when the container starts. 
 1. Notebook implementations should look for the DATA_DIR environment variable and if set use that path as the input data used instead of downloading it.  For an example of this see [this example](https://github.com/MSD-LIVE/jupyter-notebook-cerf/blob/f5e6753ef524f5b8bfd64e9dac89c3c59a1aa457/notebooks/quickstarter.ipynb#L121)
-1. Some notebook libraries expect data to be located within the package. For this, feel free to add a symbolic link from `/data` to the package via the Dockerfile. Here is an example of doing that:
+1. Some notebook libraries expect data to be located within the package. For this, feel free to add a symbolic link from `/data` to the package via the Dockerfile. This will work if the package only needs read access to the data. Here is an example of doing that:
    ```
    RUN rm -rf /opt/conda/lib/python3.11/site-packages/cerf/data
    RUN ln -s /data /opt/conda/lib/python3.11/site-packages/cerf/data
    ```
+1. If you need to edit certain data/subset of data, contact admin@msdlive.org, if you need help with this. 
 
 ## Project notebook Docker Images 
 1. Your repo's dev branch builds the image and tags it with 'dev', the main branch tags the image with 'latest'
@@ -67,24 +70,31 @@ Here are some ways to add specific behaviors for notebook containers. Note these
 
 ## Testing the notebook locally
 
-1. Get the data (requires .aws/credentials to be set or use of aws access tokens [see next section on how to get and use])
-
+1. Get the data
    ```bash
    # make sure you are in the jupyter-notebook-<<blank>> folder
    mkdir data
    cd data
+   ```
+   copy data into the data dir from data source. for example,
+   
+   ```
    aws s3 cp s3://<<blank>>-notebook-bucket/data . --recursive
-
+   ```
+   or
+   
+   ```
+   cp <path to source of data> .
    ```
 
-2. Start the notebook via docker compose
+3. Start the notebook via docker compose
    ```bash
    # make sure you are in the jupyter-notebook-<<blank>> folder
    cd ..
    docker compose up
    ```
 
-
+4. Access the localhost url that is on the stdout of docker compose up command.
 
 
 ## Adding this Project Notebook to MSD-LIVE's Notebook Services:
